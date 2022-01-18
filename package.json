@@ -1,0 +1,20 @@
+{
+  "name": "file-tool",
+  "version": "1.0.0",
+  "description": "File IO lib and web browser compatible Blob &  File implements.",
+  "main": "./index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "File",
+    "Blob",
+    "fs"
+  ],
+  "author": "lee dong eun ( sixgen@gmail.com )",
+  "license": "MIT",
+  "dependencies": {
+    "mime": "^3.0.0"
+  }
+}
