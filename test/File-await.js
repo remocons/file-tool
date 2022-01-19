@@ -1,10 +1,10 @@
-import { File } from '../index.js'
+import { loadFile } from '../index.js'
 import { Blob } from 'buffer'
 
 
-const lock = await File('lock.jpg')
-const host = await File('host.jpg')  
-const gom = await File('gom.jpg') 
+const lock = await loadFile('lock.jpg')
+const host = await loadFile('host.jpg')  
+const gom = await loadFile('gom.jpg') 
 
 const files = [lock, host, gom]
 

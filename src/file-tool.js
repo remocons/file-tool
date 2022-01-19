@@ -1,5 +1,5 @@
 import { open } from 'fs/promises'
-import { openSync, closeSync, fstatSync , readFileSync , createWriteStream} from 'fs'
+import { openSync, closeSync, fstatSync , readFileSync , createWriteStream, readFile} from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
@@ -7,10 +7,11 @@ import crypto from 'crypto'
 import path, { resolve } from 'path'
 import mime from 'mime'
 
-export class BlobFile extends Blob {
+export class File extends Blob {
   constructor (data, name, options) {
     super(data, options)
     this.name = name || 'noname'
+    this.lastModified = new Date()
   }
 }
 
@@ -27,7 +28,7 @@ export async function saveBlob (blob, filePath) {
   try {
     fd = await open(filePath, 'w+')
     const data = new Uint8Array(await blob.arrayBuffer())
-    await fd.writeFile(data)
+    return fd.writeFile(data)
   } catch (err) {
     if (err.code == 'EEXIST') {
       console.log(err)
@@ -44,23 +45,32 @@ export function getBlobFromURL (blobURL) {
 }
 
 
-export async function FileList (filePathList) {
+export async function loadFileList (filePathList) {
   if (!Array.isArray(filePathList)) return
 
   const blobList = []
   filePathList.forEach(filePath => {
-    blobList.push(File(filePath))
+    blobList.push( loadFile(filePath))
   })
 
   return Promise.all(blobList)
 }
 
-export async function File (filePath) {
-  const ab = await readFileAsArrayBuffer(filePath)
+export async function loadFile (filePath) {
+  const buf = await readFileAsBuffer(filePath)
   const type = mime.getType(filePath)
   const name = path.basename(filePath)
-  const blob = new BlobFile([ab], name, { type: type })
+  const blob = new File([buf], name, { type: type })
   // console.log('File: ', blob.name , blob.type, blob.size )
+  return blob
+}
+export  function loadFileSync (filePath) {
+  const buf =  readFileSync(filePath)
+  const type = mime.getType(filePath)
+  const name = path.basename(filePath)
+  console.log('buf.byteLength', buf.byteLength)
+  const blob = new File([buf], name, { type: type })
+  console.log('File: ', blob.name , blob.type, blob.size )
   return blob
 }
 
@@ -108,7 +118,7 @@ export async function getStat (filepath) {
     await fd?.close()
   }
 }
-export async function readFileAsArrayBufferSlice (filePath, start, end) {
+export async function readFileAsBufferSlice (filePath, start, end) {
   // console.log('slice', filePath, start, end)
   if (typeof filePath !== 'string' || start == NaN || end == NaN) {
     throw new Error('check arguments')
@@ -123,7 +133,7 @@ export async function readFileAsArrayBufferSlice (filePath, start, end) {
   try {
     fd = await open(filePath, 'r')
     await fd.read(data, 0, length, start)
-    return data.buffer
+    return data
 
   } catch (err) {
     throw err
@@ -132,14 +142,14 @@ export async function readFileAsArrayBufferSlice (filePath, start, end) {
   }
 }
 
-export async function readFileAsArrayBuffer (filePath) {
+export async function readFileAsBuffer (filePath) {
   let fd = null
   let data
-  console.log('readFileAsArrayBuffer; ', filePath)
+  // console.log('readFile; ', filePath)
   try {
     fd = await open(filePath, 'r')
     data = await fd.readFile()
-    return data.buffer
+    return data
   } catch (err) {
     throw err
   } finally {
@@ -147,22 +157,14 @@ export async function readFileAsArrayBuffer (filePath) {
   }
 }
 
-export function readFileAsArrayBufferSync (filePath) {
-  let fd, stat, buffer
-  let data 
+export function readFileAsBufferSync (filePath) {
   try {
-    // fd = openSync(filePath, 'r')
-    // stat = fstatSync(fd)
-
-    data = readFileSync( filePath )
+    let data = readFileSync( filePath )
+    return data
   } catch (err) {
     throw err
-    /* Handle the error */
-  } finally {
-    // if (fd !== undefined) { closeSync(fd) }
-  }
+  } 
 
-  return data.buffer 
 
 }
 
