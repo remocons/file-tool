@@ -1,9 +1,6 @@
-import * as ft from '../index.js'
+import { File } from '../index.js'
 import { Blob } from 'buffer'
 
-async function File(filePath) {
- return await ft.loadBlobFile(filePath)
-}
 
 const lock = await File('lock.jpg')
 const host = await File('host.jpg')  

@@ -44,24 +44,23 @@ export function getBlobFromURL (blobURL) {
 }
 
 
-export async function loadBlobFileList (filePathList) {
+export async function FileList (filePathList) {
   if (!Array.isArray(filePathList)) return
 
   const blobList = []
   filePathList.forEach(filePath => {
-    blobList.push(loadBlobFile(filePath))
+    blobList.push(File(filePath))
   })
 
   return Promise.all(blobList)
 }
 
-export async function loadBlobFile (filePath) {
-  // readFile
+export async function File (filePath) {
   const ab = await readFileAsArrayBuffer(filePath)
   const type = mime.getType(filePath)
   const name = path.basename(filePath)
   const blob = new BlobFile([ab], name, { type: type })
-  // console.log('loadBlobFile: ', blob.name , blob.type, blob.size )
+  // console.log('File: ', blob.name , blob.type, blob.size )
   return blob
 }
 
@@ -124,12 +123,13 @@ export async function readFileAsArrayBufferSlice (filePath, start, end) {
   try {
     fd = await open(filePath, 'r')
     await fd.read(data, 0, length, start)
+    return data.buffer
+
   } catch (err) {
     throw err
   } finally {
     await fd?.close()
   }
-  return data.buffer
 }
 
 export async function readFileAsArrayBuffer (filePath) {
@@ -139,12 +139,12 @@ export async function readFileAsArrayBuffer (filePath) {
   try {
     fd = await open(filePath, 'r')
     data = await fd.readFile()
+    return data.buffer
   } catch (err) {
     throw err
   } finally {
     await fd?.close()
   }
-  return data.buffer
 }
 
 export function readFileAsArrayBufferSync (filePath) {
