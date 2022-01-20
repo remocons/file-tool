@@ -1,5 +1,5 @@
-import { open } from 'fs/promises'
-import { openSync, closeSync, fstatSync , readFileSync , createWriteStream, readFile} from 'fs'
+import { open , writeFile ,readFile} from 'fs/promises'
+import { openSync, closeSync, fstatSync , readFileSync , createWriteStream } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
@@ -23,21 +23,18 @@ export function revokeObjectURL (blobURL) {
   URL.revokeObjectURL(blobURL)
 }
 export async function saveBlob (blob, filePath) {
-  let fd = null
-  console.log(`file is saved : ${filePath}  file size: ${blob.size} bytes `)
+  const data = new Uint8Array(await blob.arrayBuffer())
+
   try {
-    fd = await open(filePath, 'w+')
-    const data = new Uint8Array(await blob.arrayBuffer())
-    return fd.writeFile(data)
+    await writeFile( filePath, data )
   } catch (err) {
-    if (err.code == 'EEXIST') {
-      console.log(err)
+        if (err.code == 'EEXIST') {
+      console.log(err, filePath)
     } else {
       throw err
     }
-  } finally {
-    await fd?.close()
   }
+
 }
 
 export function getBlobFromURL (blobURL) {
@@ -68,7 +65,7 @@ export  function loadFileSync (filePath) {
   const buf =  readFileSync(filePath)
   const type = mime.getType(filePath)
   const name = path.basename(filePath)
-  console.log('buf.byteLength', buf.byteLength)
+  // console.log('buf.byteLength', buf.byteLength)
   const blob = new File([buf], name, { type: type })
   console.log('File: ', blob.name , blob.type, blob.size )
   return blob
@@ -143,18 +140,12 @@ export async function readFileAsBufferSlice (filePath, start, end) {
 }
 
 export async function readFileAsBuffer (filePath) {
-  let fd = null
-  let data
-  // console.log('readFile; ', filePath)
   try {
-    fd = await open(filePath, 'r')
-    data = await fd.readFile()
-    return data
+    return await readFile( filePath )
   } catch (err) {
     throw err
-  } finally {
-    await fd?.close()
-  }
+  } 
+
 }
 
 export function readFileAsBufferSync (filePath) {
