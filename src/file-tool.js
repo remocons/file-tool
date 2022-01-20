@@ -1,10 +1,11 @@
-import { open, writeFile, readFile } from 'fs/promises'
+import { open, writeFile, readFile ,readdir ,rename } from 'fs/promises'
 import { openSync, closeSync, fstatSync, readFileSync, createWriteStream } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
 
 import path from 'path'
+
 import mime from 'mime'
 
 export class File extends Blob {
@@ -15,6 +16,47 @@ export class File extends Blob {
   }
 }
 
+export function pathJoin( dir, file ){
+  return path.join( dir, file )
+}
+
+export async function renameDirFilesRandomUUID( dirPath){
+  let fileList = await readdir( dirPath )  
+        console.log(fileList.length)
+  let renamed = []
+    fileList.forEach( file=>{
+        if(file[0] !== '.'){
+            // console.log(ft.pathJoin( dirPath, file),  ft.pathJoin( dirPath, crypto.randomUUID() ))
+            rename( pathJoin( dirPath, file),  pathJoin( dirPath, crypto.randomUUID() ) ) 
+        } 
+        
+    }) 
+   
+}
+
+export async function renameFile(oldPath, newPath){
+  try {
+    await rename(oldPath, newPath );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function readDirFiles( path ){
+  try {
+  const files = await readdir(path);
+  for (const file of files)
+    console.log(file);
+    return files
+} catch (err) {
+  if( err.code === 'ENOENT'){
+    return 'no file or directory'
+  }else{
+    throw err
+  }
+}
+
+}
 export function createObjectURL (blob) {
   return URL.createObjectURL(blob)
 }
