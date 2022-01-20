@@ -6,11 +6,11 @@ export class VirtualBuffer {
     }
     if (typeof algorithm === 'string') this.name = algorithm
 
-    if (algorithm == 'INDEX8') {
+    if (algorithm === 'INDEX8') {
       this.algorithm = this.uint8ArrayIncrementIndex
-    } else if (algorithm == 'INDEX16') {
+    } else if (algorithm === 'INDEX16') {
       this.algorithm = this.uint16ArrayIncrementIndex
-    } else if (algorithm == 'INDEX16LE') {
+    } else if (algorithm === 'INDEX16LE') {
       this.algorithm = this.uint16ArrayIncrementIndexLE
     } else {
       this.algorithm = algorithm
@@ -36,10 +36,10 @@ export class VirtualBuffer {
     let beforeAdd = 0
     let afterAdd = 0
 
-    if ((offset % byteUnit) != 0) {
+    if ((offset % byteUnit) !== 0) {
       beforeAdd = 1
     }
-    if (((offset + length) % byteUnit) != 0) {
+    if (((offset + length) % byteUnit) !== 0) {
       afterAdd = 1
     }
     const beginIndex = (offset - beforeAdd) / byteUnit
