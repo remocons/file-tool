@@ -1,11 +1,9 @@
-import { open, writeFile, readFile ,readdir ,rename } from 'fs/promises'
-import { openSync, closeSync, fstatSync, readFileSync, createWriteStream } from 'fs'
+import { open, writeFile, readFile ,readdir ,rename ,stat} from 'fs/promises'
+import { readFileSync, createWriteStream ,statSync, readdirSync} from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
-
 import path from 'path'
-
 import mime from 'mime'
 
 export class File extends Blob {
@@ -20,43 +18,45 @@ export function pathJoin( dir, file ){
   return path.join( dir, file )
 }
 
-export async function renameDirFilesRandomUUID( dirPath){
-  let fileList = await readdir( dirPath )  
-        console.log(fileList.length)
-  let renamed = []
-    fileList.forEach( file=>{
-        if(file[0] !== '.'){
-            // console.log(ft.pathJoin( dirPath, file),  ft.pathJoin( dirPath, crypto.randomUUID() ))
-            rename( pathJoin( dirPath, file),  pathJoin( dirPath, crypto.randomUUID() ) ) 
-        } 
-        
-    }) 
-   
+
+
+export function renameDirFilesRandomUUID( dirPath){
+  return readdir( dirPath ).then( fileList=>{
+        fileList.forEach( file =>{
+            if(file[0] !== '.'){
+                rename( pathJoin( dirPath, file),  pathJoin( dirPath, crypto.randomUUID() ) ) 
+            }    
+        })  
+      }).catch(err =>{
+        console.error(err);
+      })
 }
 
-export async function renameFile(oldPath, newPath){
-  try {
-    await rename(oldPath, newPath );
-  } catch (err) {
-    console.error(err);
-  }
+export function renameRandomUUID( filePath ){
+  let dirName = path.dirname(filePath)
+  return rename( filePath,  path.join( dirName, crypto.randomUUID()  )  )
+          .catch (err =>{
+            console.error(err);
+          })
 }
 
-export async function readDirFiles( path ){
-  try {
-  const files = await readdir(path);
-  for (const file of files)
-    console.log(file);
-    return files
-} catch (err) {
-  if( err.code === 'ENOENT'){
-    return 'no file or directory'
-  }else{
-    throw err
-  }
-}
+
+export function renameFile(oldPath, newPath){
+  return rename(oldPath, newPath )
+          .catch (err =>{
+          console.error(err);
+        })
 
 }
+
+export  function readDirFiles( path ){
+  return readdir(path).catch(err=>console.log(err))
+}
+export  function readDirFilesSync( path ){
+  return readdirSync(path)
+}
+
+
 export function createObjectURL (blob) {
   return URL.createObjectURL(blob)
 }
@@ -64,43 +64,39 @@ export function createObjectURL (blob) {
 export function revokeObjectURL (blobURL) {
   URL.revokeObjectURL(blobURL)
 }
-export async function saveBlob (blob, filePath) {
-  const data = new Uint8Array(await blob.arrayBuffer())
-
-  try {
-    await writeFile(filePath, data)
-  } catch (err) {
-    if (err.code === 'EEXIST') {
-      console.log(err, filePath)
-    } else {
-      throw err
-    }
-  }
+export function saveBlob (blob, filePath) {
+  return blob.arrayBuffer()
+    .then(ab =>{
+      let data = new Uint8Array(ab)
+      return writeFile(filePath, data)
+    }).catch (err =>{
+        console.error(err);
+    })
 }
 
 export function getBlobFromURL (blobURL) {
   return resolveObjectURL(blobURL)
 }
 
-export async function loadFileList (filePathList) {
-  if (!Array.isArray(filePathList)) return
-
+export function loadFileList (filePathList) {
   const blobList = []
   filePathList.forEach(filePath => {
     blobList.push(loadFile(filePath))
   })
-
   return Promise.all(blobList)
 }
 
-export async function loadFile (filePath) {
-  const buf = await readFileAsBuffer(filePath)
-  const type = mime.getType(filePath)
-  const name = path.basename(filePath)
-  const blob = new File([buf], name, { type: type })
-  // console.log('File: ', blob.name , blob.type, blob.size )
-  return blob
+export function loadFile (filePath) {
+  return readFileAsBuffer(filePath)
+          .then( buf =>{
+            const type = mime.getType(filePath)
+            const name = path.basename(filePath)
+            return new File([buf], name, { type: type })
+          }).catch( err=>{
+            console.log(err)
+          })
 }
+
 export function loadFileSync (filePath) {
   const buf = readFileSync(filePath)
   const type = mime.getType(filePath)
@@ -111,53 +107,35 @@ export function loadFileSync (filePath) {
   return blob
 }
 
+export function getStatSync(filePath){
+  return statSync(filePath)
+}
+
 export function getFileSizeSync (filePath) {
-  let fd, stat
-
-  try {
-    fd = openSync(filePath, 'r')
-    stat = fstatSync(fd)
-  } catch (err) {
-    throw err
-    /* Handle the error */
-  } finally {
-    if (fd !== undefined) { closeSync(fd) }
-  }
-
+  let stat = getStatSync(filePath)
   return stat.size
 }
 
-export async function getFileSize (filepath) {
-  let fd = null
-  try {
-    fd = await open(filepath, 'r')
-    const stat = await fd.stat()
-    // console.log('statsize',stat.size)
-    return stat.size
-  } catch (err) {
-    throw err
-  } finally {
-    await fd?.close()
-  }
+export function getFileSize (filepath) {
+    return stat(filepath).then( st=> {
+      return st.size
+    }).catch( err =>{
+      console.log(err)
+    })
 }
 
-export async function getStat (filepath) {
-  let fd = null
-  try {
-    fd = await open(filepath, 'r')
-    const stat = await fd.stat()
-    return stat
-  } catch (err) {
-    console.log(' err', err)
-  } finally {
-    await fd?.close()
-  }
+export function getStat (filepath) {
+  return stat(filepath).then( st=> {
+    return st
+  }).catch( err =>{
+    console.log(err)
+  })
+
 }
+
+
 export async function readFileAsBufferSlice (filePath, start, end) {
-  // console.log('slice', filePath, start, end)
-  if (typeof filePath !== 'string' || isNaN(start) || isNaN(end)) {
-    throw new Error('check arguments')
-  }
+
   let fd = null
   const length = end - start
   if (length < 1) {
@@ -170,18 +148,17 @@ export async function readFileAsBufferSlice (filePath, start, end) {
     await fd.read(data, 0, length, start)
     return data
   } catch (err) {
-    throw err
+    console.log(err)
   } finally {
     await fd?.close()
   }
 }
 
-export async function readFileAsBuffer (filePath) {
-  try {
-    return await readFile(filePath)
-  } catch (err) {
-    throw err
-  }
+export function readFileAsBuffer (filePath) {
+    return readFile(filePath)
+            .catch( err =>{
+              console.log(err)
+            })
 }
 
 export function readFileAsBufferSync (filePath) {
@@ -189,17 +166,17 @@ export function readFileAsBufferSync (filePath) {
     const data = readFileSync(filePath)
     return data
   } catch (err) {
-    throw err
+    console.log(err)
   }
 }
 
-export function writeRandom (filePath) {
+export function wipeRandom (filePath) {
+
   return new Promise(function (resolve, reject) {
     const fileSize = getFileSizeSync(filePath)
-    console.log('over write random values. file size: ', fileSize)
 
     if (fileSize > 0) {
-      const CHUNK_SIZE = 100000
+      const CHUNK_SIZE = 8192
       const inStream = new Readable({
         read (size) {
           const rand = crypto.randomBytes(this.chunksize)
@@ -214,15 +191,11 @@ export function writeRandom (filePath) {
       const fileStream = createWriteStream(filePath)
 
       inStream.totalSize = fileSize
-      if (fileSize < CHUNK_SIZE) {
-        inStream.chunksize = fileSize
-      } else {
-        inStream.chunksize = CHUNK_SIZE
-      }
+      inStream.chunksize = CHUNK_SIZE
       inStream.pipe(fileStream)
 
       fileStream.on('close', e => {
-        console.log('close', e)
+        console.log('overwrite done.')
         resolve('success')
       })
     }
