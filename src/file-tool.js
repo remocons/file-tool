@@ -136,14 +136,15 @@ export function getStat (filepath) {
 
 export async function readFileAsBufferSlice (filePath, start, end) {
 
-  let fd = null
-  const length = end - start
-  if (length < 1) {
-    throw new Error('slice length below 1 ')
-  }
-  const data = new Uint8Array(length)
-
   try {
+
+    let fd = null
+    const length = end - start
+    if (length < 1) {
+      throw new Error('slice length below 1 ')
+    }
+    const data = new Uint8Array(length)
+
     fd = await open(filePath, 'r')
     await fd.read(data, 0, length, start)
     return data
