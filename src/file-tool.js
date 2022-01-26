@@ -1,5 +1,5 @@
-import { open, writeFile, readFile ,readdir ,rename ,stat} from 'fs/promises'
-import { readFileSync, createWriteStream ,statSync, readdirSync} from 'fs'
+import { open, writeFile, readFile, readdir, rename, stat } from 'fs/promises'
+import { readFileSync, createWriteStream, statSync, readdirSync } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
@@ -14,48 +14,43 @@ export class File extends Blob {
   }
 }
 
-export function pathJoin( dir, file ){
-  return path.join( dir, file )
+export function pathJoin (dir, file) {
+  return path.join(dir, file)
 }
 
-
-
-export function renameDirFilesRandomUUID( dirPath){
-  return readdir( dirPath ).then( fileList=>{
-        fileList.forEach( file =>{
-            if(file[0] !== '.'){
-                rename( pathJoin( dirPath, file),  pathJoin( dirPath, crypto.randomUUID() ) ) 
-            }    
-        })  
-      }).catch(err =>{
-        console.error(err);
-      })
+export function renameDirFilesRandomUUID (dirPath) {
+  return readdir(dirPath).then(fileList => {
+    fileList.forEach(file => {
+      if (file[0] !== '.') {
+        rename(pathJoin(dirPath, file), pathJoin(dirPath, crypto.randomUUID()))
+      }
+    })
+  }).catch(err => {
+    console.error(err)
+  })
 }
 
-export function renameRandomUUID( filePath ){
-  let dirName = path.dirname(filePath)
-  return rename( filePath,  path.join( dirName, crypto.randomUUID()  )  )
-          .catch (err =>{
-            console.error(err);
-          })
+export function renameRandomUUID (filePath) {
+  const dirName = path.dirname(filePath)
+  return rename(filePath, path.join(dirName, crypto.randomUUID()))
+    .catch(err => {
+      console.error(err)
+    })
 }
 
-
-export function renameFile(oldPath, newPath){
-  return rename(oldPath, newPath )
-          .catch (err =>{
-          console.error(err);
-        })
-
+export function renameFile (oldPath, newPath) {
+  return rename(oldPath, newPath)
+    .catch(err => {
+      console.error(err)
+    })
 }
 
-export  function readDirFiles( path ){
-  return readdir(path).catch(err=>console.log(err))
+export function readDirFiles (path) {
+  return readdir(path).catch(err => console.log(err))
 }
-export  function readDirFilesSync( path ){
+export function readDirFilesSync (path) {
   return readdirSync(path)
 }
-
 
 export function createObjectURL (blob) {
   return URL.createObjectURL(blob)
@@ -66,11 +61,11 @@ export function revokeObjectURL (blobURL) {
 }
 export function saveBlob (blob, filePath) {
   return blob.arrayBuffer()
-    .then(ab =>{
-      let data = new Uint8Array(ab)
+    .then(ab => {
+      const data = new Uint8Array(ab)
       return writeFile(filePath, data)
-    }).catch (err =>{
-        console.error(err);
+    }).catch(err => {
+      console.error(err)
     })
 }
 
@@ -88,13 +83,13 @@ export function loadFileList (filePathList) {
 
 export function loadFile (filePath) {
   return readFileAsBuffer(filePath)
-          .then( buf =>{
-            const type = mime.getType(filePath)
-            const name = path.basename(filePath)
-            return new File([buf], name, { type: type })
-          }).catch( err=>{
-            console.log(err)
-          })
+    .then(buf => {
+      const type = mime.getType(filePath)
+      const name = path.basename(filePath)
+      return new File([buf], name, { type: type })
+    }).catch(err => {
+      console.log(err)
+    })
 }
 
 export function loadFileSync (filePath) {
@@ -107,38 +102,35 @@ export function loadFileSync (filePath) {
   return blob
 }
 
-export function getStatSync(filePath){
+export function getStatSync (filePath) {
   return statSync(filePath)
 }
 
 export function getFileSizeSync (filePath) {
-  let stat = getStatSync(filePath)
+  const stat = getStatSync(filePath)
   return stat.size
 }
 
 export function getFileSize (filepath) {
-    return stat(filepath).then( st=> {
-      return st.size
-    }).catch( err =>{
-      console.log(err)
-    })
+  return stat(filepath).then(st => {
+    return st.size
+  }).catch(err => {
+    console.log(err)
+  })
 }
 
 export function getStat (filepath) {
-  return stat(filepath).then( st=> {
+  return stat(filepath).then(st => {
     return st
-  }).catch( err =>{
+  }).catch(err => {
     console.log(err)
   })
-
 }
 
-
 export async function readFileAsBufferSlice (filePath, start, end) {
+  let fd = null
 
   try {
-
-    let fd = null
     const length = end - start
     if (length < 1) {
       throw new Error('slice length below 1 ')
@@ -156,10 +148,10 @@ export async function readFileAsBufferSlice (filePath, start, end) {
 }
 
 export function readFileAsBuffer (filePath) {
-    return readFile(filePath)
-            .catch( err =>{
-              console.log(err)
-            })
+  return readFile(filePath)
+    .catch(err => {
+      console.log(err)
+    })
 }
 
 export function readFileAsBufferSync (filePath) {
@@ -172,7 +164,6 @@ export function readFileAsBufferSync (filePath) {
 }
 
 export function wipeRandom (filePath) {
-
   return new Promise(function (resolve, reject) {
     const fileSize = getFileSizeSync(filePath)
 
