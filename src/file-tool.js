@@ -5,9 +5,10 @@ import { Readable } from 'stream'
 import crypto from 'crypto'
 import path from 'path'
 import mime from 'mime'
+export {Blob} from 'buffer'
 
 export class File extends Blob {
-  constructor (data, name, options) {
+  constructor (data, name, options = {}) {
     super(data, options)
     this.name = name || 'noname'
     this.lastModified = new Date()
@@ -81,15 +82,51 @@ export function loadFileList (filePathList) {
   return Promise.all(blobList)
 }
 
-export function loadFile (filePath) {
-  return readFileAsBuffer(filePath)
-    .then(buf => {
-      const type = mime.getType(filePath)
-      const name = path.basename(filePath)
-      return new File([buf], name, { type: type })
-    }).catch(err => {
-      console.log(err)
-    })
+export async function loadFile (filePath) {
+  try {
+    const type = mime.getType(filePath)
+    const name = path.basename(filePath)
+    // const twoGB = 2 * 2 ** 30
+    const chunkSize = 1000 * 2 ** 20
+    let blob = new Blob([])
+
+     let size = await getFileSize(filePath)
+     console.log(size)
+
+     if( size > 4 * 2 ** 30 ){
+      throw "SIZE OVER 4G"
+     
+     }else {
+
+      if( size <= chunkSize ){
+          //read once
+        let buf = await readFileAsBufferSlice(filePath, 0, size)
+        return new File([buf], name, { type: type })
+
+      }else{
+          // read ntime  
+          let n = Math.floor( size / chunkSize)
+          let remain = size % chunkSize
+          console.log('n, r', n, remain )
+          for(let i = 0; i < n ; i++){
+            let buf = await readFileAsBufferSlice(filePath, i * chunkSize , (i + 1)*chunkSize  )
+            blob = new Blob([ blob, buf ])
+          }
+
+          // and remain
+            let rbuf = await readFileAsBufferSlice(filePath, size - remain , size  )
+            blob = new Blob([ blob, rbuf ])
+      }
+      
+      return new File([blob], name, { type: type })
+      
+     }
+
+      
+  } catch (error) {
+      console.log( error)
+  }
+ 
 }
 
 export function loadFileSync (filePath) {
@@ -129,16 +166,19 @@ export function getStat (filepath) {
 
 export async function readFileAsBufferSlice (filePath, start, end) {
   let fd = null
-
   try {
     const length = end - start
+// console.log('start',start, 'end', end,  'len', length)
+
     if (length < 1) {
       throw new Error('slice length below 1 ')
     }
     const data = new Uint8Array(length)
+    // const data = Buffer.alloc(length)
 
     fd = await open(filePath, 'r')
-    await fd.read(data, 0, length, start)
+    // console.log('byteLength:', length)
+    await fd.read( data,0, length, start )
     return data
   } catch (err) {
     console.log(err)
