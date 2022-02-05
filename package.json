@@ -4,8 +4,21 @@
   "description": "File IO lib and web browser compatible Blob &  File implements.",
   "main": "./index.js",
   "type": "module",
+  "module":"dist/file-tool.umd.js",
+  "commonjs":"dist/file-tool.cjs",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.1.0",
+    "rollup": "^2.36.2",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "exports": {
+    "import": "./index.js",
+    "require": "./dist/file-tool.cjs"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
   },
   "keywords": [
     "File",
