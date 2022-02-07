@@ -83,7 +83,7 @@ export function loadFileList (filePathList) {
 }
 
 export async function loadFile (filePath) {
-  try {
+ 
     const type = mime.getType(filePath)
     const name = path.basename(filePath)
     // const twoGB = 2 * 2 ** 30
@@ -91,7 +91,6 @@ export async function loadFile (filePath) {
     let blob = new Blob([])
 
      let size = await getFileSize(filePath)
-     console.log(size)
 
      if( size > 4 * 2 ** 30 ){
       throw "SIZE OVER 4G"
@@ -107,7 +106,7 @@ export async function loadFile (filePath) {
           // read ntime  
           let n = Math.floor( size / chunkSize)
           let remain = size % chunkSize
-          console.log('n, r', n, remain )
+          // console.log('n, r', n, remain )
           for(let i = 0; i < n ; i++){
             let buf = await readFileAsBufferSlice(filePath, i * chunkSize , (i + 1)*chunkSize  )
             blob = new Blob([ blob, buf ])
@@ -122,10 +121,7 @@ export async function loadFile (filePath) {
       
      }
 
-      
-  } catch (error) {
-      console.log( error)
-  }
+
  
 }
 
@@ -135,7 +131,7 @@ export function loadFileSync (filePath) {
   const name = path.basename(filePath)
   // console.log('buf.byteLength', buf.byteLength)
   const blob = new File([buf], name, { type: type })
-  console.log('File: ', blob.name, blob.type, blob.size)
+  // console.log('File: ', blob.name, blob.type, blob.size)
   return blob
 }
 
@@ -151,16 +147,12 @@ export function getFileSizeSync (filePath) {
 export function getFileSize (filepath) {
   return stat(filepath).then(st => {
     return st.size
-  }).catch(err => {
-    console.log(err)
   })
 }
 
 export function getStat (filepath) {
   return stat(filepath).then(st => {
     return st
-  }).catch(err => {
-    console.log(err)
   })
 }
 
@@ -189,9 +181,7 @@ export async function readFileAsBufferSlice (filePath, start, end) {
 
 export function readFileAsBuffer (filePath) {
   return readFile(filePath)
-    .catch(err => {
-      console.log(err)
-    })
+
 }
 
 export function readFileAsBufferSync (filePath) {
