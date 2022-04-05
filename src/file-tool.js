@@ -5,21 +5,21 @@ import { Readable } from 'stream'
 import crypto from 'crypto'
 import path from 'path'
 import mime from 'mime'
-export {Blob} from 'buffer'
+export { Blob } from 'buffer'
 
 export class File extends Blob {
-  constructor (data, name, options = {}) {
+  constructor(data, name, options = {}) {
     super(data, options)
     this.name = name || 'noname'
     this.lastModified = new Date()
   }
 }
 
-export function pathJoin (dir, file) {
+export function pathJoin(dir, file) {
   return path.join(dir, file)
 }
 
-export function renameDirFilesRandomUUID (dirPath) {
+export function renameDirFilesRandomUUID(dirPath) {
   return readdir(dirPath).then(fileList => {
     fileList.forEach(file => {
       if (file[0] !== '.') {
@@ -31,7 +31,7 @@ export function renameDirFilesRandomUUID (dirPath) {
   })
 }
 
-export function renameRandomUUID (filePath) {
+export function renameRandomUUID(filePath) {
   const dirName = path.dirname(filePath)
   return rename(filePath, path.join(dirName, crypto.randomUUID()))
     .catch(err => {
@@ -39,28 +39,28 @@ export function renameRandomUUID (filePath) {
     })
 }
 
-export function renameFile (oldPath, newPath) {
+export function renameFile(oldPath, newPath) {
   return rename(oldPath, newPath)
     .catch(err => {
       console.error(err)
     })
 }
 
-export function readDirFiles (path) {
+export function readDirFiles(path) {
   return readdir(path).catch(err => console.log(err))
 }
-export function readDirFilesSync (path) {
+export function readDirFilesSync(path) {
   return readdirSync(path)
 }
 
-export function createObjectURL (blob) {
+export function createObjectURL(blob) {
   return URL.createObjectURL(blob)
 }
 
-export function revokeObjectURL (blobURL) {
+export function revokeObjectURL(blobURL) {
   URL.revokeObjectURL(blobURL)
 }
-export function saveBlob (blob, filePath) {
+export function saveBlob(blob, filePath) {
   return blob.arrayBuffer()
     .then(ab => {
       const data = new Uint8Array(ab)
@@ -70,11 +70,11 @@ export function saveBlob (blob, filePath) {
     })
 }
 
-export function getBlobFromURL (blobURL) {
+export function getBlobFromURL(blobURL) {
   return resolveObjectURL(blobURL)
 }
 
-export function loadFileList (filePathList) {
+export function loadFileList(filePathList) {
   const blobList = []
   filePathList.forEach(filePath => {
     blobList.push(loadFile(filePath))
@@ -82,50 +82,50 @@ export function loadFileList (filePathList) {
   return Promise.all(blobList)
 }
 
-export async function loadFile (filePath) {
- 
-    const type = mime.getType(filePath)
-    const name = path.basename(filePath)
-    // const twoGB = 2 * 2 ** 30
-    const chunkSize = 1000 * 2 ** 20
-    let blob = new Blob([])
+export async function loadFile(filePath) {
 
-     let size = await getFileSize(filePath)
+  const type = mime.getType(filePath)
+  const name = path.basename(filePath)
+  // const twoGB = 2 * 2 ** 30
+  const chunkSize = 1000 * 2 ** 20
+  let blob = new Blob([])
 
-     if( size > 4 * 2 ** 30 ){
-      throw "SIZE OVER 4G"
-     
-     }else {
+  let size = await getFileSize(filePath)
 
-      if( size <= chunkSize ){
-          //read once
-        let buf = await readFileAsBufferSlice(filePath, 0, size)
-        return new File([buf], name, { type: type })
+  if (size > 4 * 2 ** 30) {
+    throw "SIZE OVER 4G"
 
-      }else{
-          // read ntime  
-          let n = Math.floor( size / chunkSize)
-          let remain = size % chunkSize
-          // console.log('n, r', n, remain )
-          for(let i = 0; i < n ; i++){
-            let buf = await readFileAsBufferSlice(filePath, i * chunkSize , (i + 1)*chunkSize  )
-            blob = new Blob([ blob, buf ])
-          }
+  } else {
 
-          // and remain
-            let rbuf = await readFileAsBufferSlice(filePath, size - remain , size  )
-            blob = new Blob([ blob, rbuf ])
+    if (size <= chunkSize) {
+      //read once
+      let buf = await readFileAsBufferSlice(filePath, 0, size)
+      return new File([buf], name, { type: type })
+
+    } else {
+      // read ntime  
+      let n = Math.floor(size / chunkSize)
+      let remain = size % chunkSize
+      // console.log('n, r', n, remain )
+      for (let i = 0; i < n; i++) {
+        let buf = await readFileAsBufferSlice(filePath, i * chunkSize, (i + 1) * chunkSize)
+        blob = new Blob([blob, buf])
       }
-      
-      return new File([blob], name, { type: type })
-      
-     }
+
+      // and remain
+      let rbuf = await readFileAsBufferSlice(filePath, size - remain, size)
+      blob = new Blob([blob, rbuf])
+    }
+
+    return new File([blob], name, { type: type })
+
+  }
 
 
- 
+
 }
 
-export function loadFileSync (filePath) {
+export function loadFileSync(filePath) {
   const buf = readFileSync(filePath)
   const type = mime.getType(filePath)
   const name = path.basename(filePath)
@@ -135,32 +135,32 @@ export function loadFileSync (filePath) {
   return blob
 }
 
-export function getStatSync (filePath) {
+export function getStatSync(filePath) {
   return statSync(filePath)
 }
 
-export function getFileSizeSync (filePath) {
+export function getFileSizeSync(filePath) {
   const stat = getStatSync(filePath)
   return stat.size
 }
 
-export function getFileSize (filepath) {
+export function getFileSize(filepath) {
   return stat(filepath).then(st => {
     return st.size
   })
 }
 
-export function getStat (filepath) {
+export function getStat(filepath) {
   return stat(filepath).then(st => {
     return st
   })
 }
 
-export async function readFileAsBufferSlice (filePath, start, end) {
+export async function readFileAsBufferSlice(filePath, start, end) {
   let fd = null
   try {
     const length = end - start
-// console.log('start',start, 'end', end,  'len', length)
+    // console.log('start',start, 'end', end,  'len', length)
 
     if (length < 1) {
       throw new Error('slice length below 1 ')
@@ -170,7 +170,7 @@ export async function readFileAsBufferSlice (filePath, start, end) {
 
     fd = await open(filePath, 'r')
     // console.log('byteLength:', length)
-    await fd.read( data,0, length, start )
+    await fd.read(data, 0, length, start)
     return data
   } catch (err) {
     console.log(err)
@@ -179,12 +179,12 @@ export async function readFileAsBufferSlice (filePath, start, end) {
   }
 }
 
-export function readFileAsBuffer (filePath) {
+export function readFileAsBuffer(filePath) {
   return readFile(filePath)
 
 }
 
-export function readFileAsBufferSync (filePath) {
+export function readFileAsBufferSync(filePath) {
   try {
     const data = readFileSync(filePath)
     return data
@@ -193,14 +193,14 @@ export function readFileAsBufferSync (filePath) {
   }
 }
 
-export function wipeRandom (filePath) {
+export function wipeRandom(filePath) {
   return new Promise(function (resolve, reject) {
     const fileSize = getFileSizeSync(filePath)
 
     if (fileSize > 0) {
       const CHUNK_SIZE = 8192
       const inStream = new Readable({
-        read (size) {
+        read(size) {
           const rand = crypto.randomBytes(this.chunksize)
           this.push(rand)
           this.totalSize -= this.chunksize
