@@ -2,23 +2,25 @@
   "name": "file-tool",
   "version": "1.0.0",
   "description": "File IO lib and web browser compatible Blob &  File implements.",
-  "main": "./index.js",
+  "main": "./src/file-tool.js",
   "type": "module",
-  "module":"dist/file-tool.umd.js",
-  "commonjs":"dist/file-tool.cjs",
+  "esm": "dist/file-tool.mjs",
+  "cjs": "dist/file-tool.cjs",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.1.0",
+    "mocha": "^9.2.2",
     "rollup": "^2.36.2",
     "rollup-plugin-terser": "^7.0.2"
   },
   "exports": {
-    "import": "./index.js",
+    "import": "./src/file-tool.js",
     "require": "./dist/file-tool.cjs"
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "test": "mocha"
   },
   "keywords": [
     "File",

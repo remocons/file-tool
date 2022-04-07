@@ -1,4 +1,4 @@
-import { loadFile } from '../index.js'
+import { loadFile } from '../src/file-tool.js'
 import { Blob } from 'buffer'
 
 
