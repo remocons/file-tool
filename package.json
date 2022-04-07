@@ -1,7 +1,7 @@
 {
   "name": "file-tool",
-  "version": "1.0.0",
-  "description": "File IO lib and web browser compatible Blob &  File implements.",
+  "version": "0.1.0",
+  "description": "Simple wrapper library of NodeJS fs that support browser Blob & File",
   "main": "./src/file-tool.js",
   "type": "module",
   "esm": "dist/file-tool.mjs",
@@ -9,7 +9,6 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.1.0",
-    "mocha": "^9.2.2",
     "rollup": "^2.36.2",
     "rollup-plugin-terser": "^7.0.2"
   },
@@ -19,15 +18,17 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "mocha"
+    "dev": "rollup -c -w"
   },
   "keywords": [
     "File",
     "Blob",
     "fs"
   ],
-  "author": "lee dong eun ( sixgen@gmail.com )",
+  "author": {
+    "name": "Lee Dong Eun",
+    "email": "sixgen@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "mime": "^3.0.0"
