@@ -1,4 +1,4 @@
 # file-tool
 
-congtrol repo private
+make-robot repo public
 
