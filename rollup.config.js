@@ -10,6 +10,7 @@ export default [
       { file: pkg.cjs, format: 'cjs' },
       { file: pkg.esm, format: 'es' }
     ],
-  	plugins: [resolve(), commonjs(),terser()]
+    plugins: [resolve(), commonjs(), terser()],
+    external: ['fs/promises'] 
   }
 ]
