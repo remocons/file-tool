@@ -1,4 +1,4 @@
-import { open, writeFile, readFile, readdir, rename, stat } from 'fs/promises'
+import { open, writeFile, readFile, readdir, rename, stat ,unlink } from 'fs/promises'
 import { readFileSync, createWriteStream, statSync, readdirSync } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
@@ -6,6 +6,7 @@ import crypto from 'crypto'
 import path from 'path'
 import mime from 'mime'
 export { Blob } from 'buffer'
+export { mkdir } from 'fs/promises'
 
 export class File extends Blob {
   constructor(data, name, options = {}) {
@@ -74,6 +75,11 @@ export function getBlobFromURL(blobURL) {
   return resolveObjectURL(blobURL)
 }
 
+/**
+ * 
+ * @param {Array} filePathList  Array of File Path List 
+ * @returns {Array} Array of BlobFileList
+ */
 export function loadFileList(filePathList) {
   const blobList = []
   filePathList.forEach(filePath => {
@@ -222,4 +228,16 @@ export function wipeRandom(filePath) {
       })
     }
   })
+}
+
+
+export async function deleteFile( filePath ){
+
+  try {
+    await unlink(filePath);
+    console.log('successfully deleted',filePath );
+  } catch (error) {
+    console.error('delete err:', error.message);
+  }
+
 }
