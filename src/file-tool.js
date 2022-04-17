@@ -1,4 +1,4 @@
-import { open, writeFile, readFile, readdir, rename, stat ,unlink } from 'fs/promises'
+import { open, writeFile, readFile, readdir, rename, stat ,unlink ,rm } from 'fs/promises'
 import { readFileSync, createWriteStream, statSync, readdirSync } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
@@ -235,9 +235,23 @@ export async function deleteFile( filePath ){
 
   try {
     await unlink(filePath);
-    console.log('successfully deleted',filePath );
+    // console.log('unlink : successfully deleted',filePath );
   } catch (error) {
-    console.error('delete err:', error.message);
+    // console.error('delete err:', error.message);
   }
 
 }
+
+
+export async function removeDirRecursiveForce( filePath ){
+
+  try {
+    await rm( filePath, { recursive: true , force: true })
+    // console.log('rm -rf : successfully deleted',filePath );
+  } catch (error) {
+    // console.error('delete err:', error.message);
+  }
+
+}
+
+
