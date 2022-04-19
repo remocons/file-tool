@@ -1,4 +1,4 @@
-import { open, writeFile, readFile, readdir, rename, stat ,unlink ,rm } from 'fs/promises'
+import { open, writeFile, readFile, readdir, rename, stat, unlink, rm } from 'fs/promises'
 import { readFileSync, createWriteStream, statSync, readdirSync } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
@@ -61,6 +61,7 @@ export function createObjectURL(blob) {
 export function revokeObjectURL(blobURL) {
   URL.revokeObjectURL(blobURL)
 }
+
 export function saveBlob(blob, filePath) {
   return blob.arrayBuffer()
     .then(ab => {
@@ -231,21 +232,13 @@ export function wipeRandom(filePath) {
 }
 
 
-export async function deleteFile( filePath ){
-
+export async function deleteFile(filePath) {
   return unlink(filePath);
-    // console.log('unlink : successfully deleted',filePath );
- 
-
 }
 
 
-export async function removeDirRecursiveForce( filePath ){
-
-  return rm( filePath, { recursive: true , force: true })
-    // console.log('rm -rf : successfully deleted',filePath );
-
-
+export async function removeDirRecursiveForce(filePath) {
+  return rm(filePath, { recursive: true, force: true })
 }
 
 
