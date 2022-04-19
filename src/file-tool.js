@@ -233,24 +233,18 @@ export function wipeRandom(filePath) {
 
 export async function deleteFile( filePath ){
 
-  try {
-    await unlink(filePath);
+  return unlink(filePath);
     // console.log('unlink : successfully deleted',filePath );
-  } catch (error) {
-    // console.error('delete err:', error.message);
-  }
+ 
 
 }
 
 
 export async function removeDirRecursiveForce( filePath ){
 
-  try {
-    await rm( filePath, { recursive: true , force: true })
+  return rm( filePath, { recursive: true , force: true })
     // console.log('rm -rf : successfully deleted',filePath );
-  } catch (error) {
-    // console.error('delete err:', error.message);
-  }
+
 
 }
 
