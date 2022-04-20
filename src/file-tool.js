@@ -125,10 +125,7 @@ export async function loadFile(filePath) {
     }
 
     return new File([blob], name, { type: type })
-
   }
-
-
 
 }
 
