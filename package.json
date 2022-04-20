@@ -1,7 +1,7 @@
 {
   "name": "file-tool",
   "version": "0.1.0",
-  "description": "Simple wrapper library of NodeJS fs that support browser Blob & File",
+  "description": "Simple wrapper library for NodeJS that support Web APIs File.",
   "main": "./src/file-tool.js",
   "type": "module",
   "esm": "dist/file-tool.mjs",

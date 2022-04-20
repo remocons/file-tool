@@ -5,6 +5,7 @@ import { Readable } from 'stream'
 import crypto from 'crypto'
 import path from 'path'
 import mime from 'mime'
+
 export { Blob } from 'buffer'
 export { mkdir } from 'fs/promises'
 
@@ -62,13 +63,17 @@ export function revokeObjectURL(blobURL) {
   URL.revokeObjectURL(blobURL)
 }
 
+/**
+ * 
+ * @param {Blob|File} blob Web APIs Blob
+ * @param {String} filePath fullPath. using pathJoin recommended
+ * @returns Promise
+ */
 export function saveBlob(blob, filePath) {
   return blob.arrayBuffer()
     .then(ab => {
       const data = new Uint8Array(ab)
       return writeFile(filePath, data)
-    }).catch(err => {
-      console.error(err)
     })
 }
 
@@ -89,6 +94,11 @@ export function loadFileList(filePathList) {
   return Promise.all(blobList)
 }
 
+/**
+ * 
+ * @param {String} filePath 
+ * @returns Promise File( Web APIs File)
+ */
 export async function loadFile(filePath) {
 
   const type = mime.getType(filePath)
@@ -106,7 +116,7 @@ export async function loadFile(filePath) {
 
     if (size <= chunkSize) {
       //read once
-      let buf = await readFileAsBufferSlice(filePath, 0, size)
+      let buf = await readFileAsBuffer(filePath )
       return new File([buf], name, { type: type })
 
     } else {
@@ -164,16 +174,11 @@ export async function readFileAsBufferSlice(filePath, start, end) {
   let fd = null
   try {
     const length = end - start
-    // console.log('start',start, 'end', end,  'len', length)
-
     if (length < 1) {
       throw new Error('slice length below 1 ')
     }
     const data = new Uint8Array(length)
-    // const data = Buffer.alloc(length)
-
     fd = await open(filePath, 'r')
-    // console.log('byteLength:', length)
     await fd.read(data, 0, length, start)
     return data
   } catch (err) {
