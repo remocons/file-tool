@@ -255,36 +255,3 @@ export async function makeDir(path) {
    return mkdir(path , { recursive: true })
 }
 
-
-
-/*
- Information.
-
-  1. rmSync vs unlinkSync
-  
-  rmSync : posix rm style.  
-    exceptions will be ignored if path does not exist. Default: false.
-
-  unlink : no options.
-
-  2.  exists( path, callback)  deprecated.
-  3. existsSync() available
-
-
-4.open, write 
-
- !fs.existsSync(directoryPath) && fs.mkdirSync(directoryPath);
-
-파일이 없으면 만든다.
-파일이 있으면 오류
-파일이 있어도 무시
-
-파일을 지운다. 없으면 에러
-파일을 지운다. 없으면 무시.
-
-폴더를 만든다. 이미 있으면 에러.
-폴더를 만든다. 이미 있어도 무시.  mkDirSync( force)
-
-
-
-*/
