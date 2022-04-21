@@ -1,5 +1,5 @@
-import { open, writeFile, readFile, readdir, rename, stat, unlink, rm } from 'fs/promises'
-import { readFileSync, createWriteStream, statSync, readdirSync, fstat } from 'fs'
+import { open, writeFile, readFile, readdir, rename, stat, rm ,mkdir } from 'fs/promises'
+import { readFileSync, createWriteStream, statSync, readdirSync, existsSync, rmSync, mkdirSync } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
@@ -7,7 +7,6 @@ import path from 'path'
 import mime from 'mime'
 
 export { Blob } from 'buffer'
-export { mkdir } from 'fs/promises'
 
 export class File extends Blob {
   constructor(data, name, options = {}) {
@@ -28,28 +27,21 @@ export function renameDirFilesRandomUUID(dirPath) {
         rename(pathJoin(dirPath, file), pathJoin(dirPath, crypto.randomUUID()))
       }
     })
-  }).catch(err => {
-    console.error(err)
   })
+
 }
 
 export function renameRandomUUID(filePath) {
   const dirName = path.dirname(filePath)
   return rename(filePath, path.join(dirName, crypto.randomUUID()))
-    .catch(err => {
-      console.error(err)
-    })
 }
 
 export function renameFile(oldPath, newPath) {
   return rename(oldPath, newPath)
-    .catch(err => {
-      console.error(err)
-    })
 }
 
 export function readDirFiles(path) {
-  return readdir(path).catch(err => console.log(err))
+  return readdir(path)
 }
 export function readDirFilesSync(path) {
   return readdirSync(path)
@@ -67,14 +59,14 @@ export function revokeObjectURL(blobURL) {
 /**
  * 
  * @param {Blob|File} blob Web APIs Blob
- * @param {String} filePath fullPath. 
+ * @param {String} path fullPath. 
  * @returns Promise
  */
-export function saveBlob(blob, filePath) {
+export function saveBlob(blob, path) {
   return blob.arrayBuffer()
     .then(ab => {
       const data = new Uint8Array(ab)
-      return writeFile(filePath, data)
+      return writeFile(path, data)
     })
 }
 
@@ -90,8 +82,8 @@ export function getBlobFromURL(blobURL) {
  */
 export function loadFileList(filePathList) {
   const blobList = []
-  filePathList.forEach(filePath => {
-    blobList.push(loadFile(filePath))
+  filePathList.forEach(path => {
+    blobList.push(loadFile(path))
   })
   return Promise.all(blobList)
 }
@@ -118,7 +110,7 @@ export async function loadFile(filePath) {
 
     if (size <= chunkSize) {
       //read once
-      let buf = await readFileAsBuffer(filePath )
+      let buf = await readFileAsBuffer(filePath)
       return new File([buf], name, { type: type })
 
     } else {
@@ -151,36 +143,36 @@ export function loadFileSync(filePath) {
   return blob
 }
 
-export function getStatSync(filePath) {
-  return statSync(filePath)
+export function getStatSync(path) {
+  return statSync(path)
 }
 
-export function getFileSizeSync(filePath) {
-  const stat = getStatSync(filePath)
+export function getFileSizeSync(path) {
+  const stat = getStatSync(path)
   return stat.size
 }
 
-export function getFileSize(filepath) {
-  return stat(filepath).then(st => {
+export function getFileSize(path) {
+  return stat(path).then(st => {
     return st.size
   })
 }
 
-export function getStat(filepath) {
-  return stat(filepath).then(st => {
+export function getStat(path) {
+  return stat(path).then(st => {
     return st
   })
 }
 
-export async function readFileAsBufferSlice(filePath, start, end) {
+export async function readFileAsBufferSlice(path, start, end) {
   let fd = null
   try {
     const length = end - start
     if (length < 1) {
-      throw new Error('slice length below 1 ')
+      throw new Error('slice length below 1')
     }
     const data = new Uint8Array(length)
-    fd = await open(filePath, 'r')
+    fd = await open(path, 'r')
     await fd.read(data, 0, length, start)
     return data
   } catch (err) {
@@ -190,23 +182,18 @@ export async function readFileAsBufferSlice(filePath, start, end) {
   }
 }
 
-export function readFileAsBuffer(filePath) {
-  return readFile(filePath)
+export function readFileAsBuffer(path) {
+  return readFile(path)
 
 }
 
-export function readFileAsBufferSync(filePath) {
-  try {
-    const data = readFileSync(filePath)
-    return data
-  } catch (err) {
-    console.log(err)
-  }
+export function readFileAsBufferSync(path) {
+  return readFileSync(path)
 }
 
-export function wipeRandom(filePath) {
+export function wipeRandom(path) {
   return new Promise(function (resolve, reject) {
-    const fileSize = getFileSizeSync(filePath)
+    const fileSize = getFileSizeSync(path)
 
     if (fileSize > 0) {
       const CHUNK_SIZE = 8192
@@ -221,7 +208,7 @@ export function wipeRandom(filePath) {
         }
       })
 
-      const fileStream = createWriteStream(filePath)
+      const fileStream = createWriteStream(path)
 
       inStream.totalSize = fileSize
       inStream.chunksize = CHUNK_SIZE
@@ -236,13 +223,68 @@ export function wipeRandom(filePath) {
 }
 
 
-export async function deleteFile(filePath) {
-  return unlink(filePath);
+/*
+| when option
+| force === true:  exceptions will be ignored if path does not exist. Default: false.  
+| recursive === true: perform a recursive directory removal.
+*/
+
+// remove file. 
+export async function deleteFile(path) {
+  return rm(path, { force: true });
 }
 
+export function deleteFileSync(path) {
+  rmSync(path, { force: true })
+}
 
-export async function removeDirRecursiveForce(dirPath) {
+// remove directory.
+export async function removeDir(dirPath) {
   return rm(dirPath, { recursive: true, force: true })
 }
 
+export function removeDirSync(dirPath) {
+  rmSync(dirPath, { recursive: true, force: true })
+}
 
+// create directory.
+export function makeDirSync(path) {
+  if (!existsSync(path)) mkdirSync(path)
+}
+export async function makeDir(path) {
+   return mkdir(path , { recursive: true })
+}
+
+
+
+/*
+ Information.
+
+  1. rmSync vs unlinkSync
+  
+  rmSync : posix rm style.  
+    exceptions will be ignored if path does not exist. Default: false.
+
+  unlink : no options.
+
+  2.  exists( path, callback)  deprecated.
+  3. existsSync() available
+
+
+4.open, write 
+
+ !fs.existsSync(directoryPath) && fs.mkdirSync(directoryPath);
+
+파일이 없으면 만든다.
+파일이 있으면 오류
+파일이 있어도 무시
+
+파일을 지운다. 없으면 에러
+파일을 지운다. 없으면 무시.
+
+폴더를 만든다. 이미 있으면 에러.
+폴더를 만든다. 이미 있어도 무시.  mkDirSync( force)
+
+
+
+*/

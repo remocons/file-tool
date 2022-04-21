@@ -8,7 +8,10 @@ Simple Node.js file library that support Web APIs `Blob` and `File` and secure `
 ## feature
 -  Web API's `File` interface for Node.js.
   - NodeJS doesn't support Web APIs File.
-  - NodeJS support Blob from buffer.Blob. (status: Experimental ) 
+  - Blob is experimental ( ~v17.x).
+    - You will get some warning message. 
+    - gradurate Blob from Experimental ( from v18.x. 2022.April.19) 
+    - conguraturations!!! 
 - `saveBlob()`: save Web APIs Blob to the filesystem.
 - `loadFile()`: read file from filesystem, return Web APIs File.
 - for security and crypto:
@@ -38,7 +41,7 @@ export class File extends Blob {
   - support filesystem access: 
     - readFile, read
     - writeFile, write
-  - use filePath:string. or fd(file descriptor: file ID)
+  - use file path or fd(file descriptor: file ID)
 - Browser
   - No API for direct filesystem access.
   - get `Blob` from : new Blob([buffer]) or from File.
@@ -57,19 +60,19 @@ export class File extends Blob {
 
 ### readFileAsBuffer()  
 - alias of readFile()
-- filePath => Buffer
+- path => Buffer
 - 비동기로 파일패스의 파일을 버퍼로 반환합니다.
 - fs 기본 API입니다.
 - `Buffer` : subclass of Uint8Array
 
 ```js
-readFileAsBuffer(filePath: string): Promise<Buffer>
+readFileAsBuffer(path: string): Promise<Buffer>
 ```
 ### readFileAsBufferSync()
 - 동기형 함수
 - alias of readFileSync()
 ```js
-readFileAsBufferSync(filePath: string):Buffer
+readFileAsBufferSync(path: string):Buffer
 ```
 
 
@@ -79,7 +82,7 @@ readFileAsBufferSync(filePath: string):Buffer
 
 ### readFileAsBufferSlice()
 ```js
-readFileAsBufferSlice(filePath:string, start:number, end:number)
+readFileAsBufferSlice(path:string, start:number, end:number)
 ```
 - 파일 일부분만 읽어서 버퍼를 반환합니다.
 - 대용량 파일을 작은 크기로 잘라서 점진적으로 로딩하는 목적으로도 사용됩니다.
@@ -88,9 +91,9 @@ readFileAsBufferSlice(filePath:string, start:number, end:number)
 ### loadFile()  
 
 ```js
-loadFile(fielPath: string): Promise<File>
+loadFile(path: string): Promise<File>
 ```
--  filePath => blobFile
+-  path => blobFile
 - 파일패스의 파일을 비동기로 읽어서 Web Browser 호환형 파일(blobFile)을 반환합니다. 일반적인 파일이라는 명칭과 구분하기 위해 본 모듈에서는 blobFile이라는 표현을 사용했습니다.
 
 - `blobFile` : Web APIs File( Blob is included)
@@ -99,9 +102,9 @@ loadFile(fielPath: string): Promise<File>
 ### loadFileSync()
 
 ```js
-loadFileSync(fielPath: string): Blob
+loadFileSync(path: string): Blob
 ```
--  filePath => blobFile
+-  path => blobFile
 - loadFile과 달리 loadFileSync 는 호출 즉시 파일을 반환해줍니다. 동기형 함수는 처리되는 동안 다른 작업의 진행을 차단(Block)되므로 대부분의 경우 비동기형 함수 사용이 권장됩니다. 
 
 
@@ -110,7 +113,7 @@ loadFileSync(fielPath: string): Blob
 ### loadFileList()
 
 ```js
-loadFileList(fielPathList: Array<string>): Promise<FileList>
+loadFileList(filePathList: Array<string>): Promise<FileList>
 ```
 - filePathList => blobFileList
 - 여러개의 파일패스 목록을 입력하면 비동기로 Web APIs FileList를 반환합니다.
@@ -124,7 +127,7 @@ loadFileList(fielPathList: Array<string>): Promise<FileList>
 - Blob 이나 File 자료를 지정한 파일패스에 파일시스템 파일로 저장해줍니다.
 
 ```js
-saveBlob(blob:Blob|File, filePath: string)
+saveBlob(blob:Blob|File, path: string)
 ```
 
 
@@ -136,7 +139,7 @@ saveBlob(blob:Blob|File, filePath: string)
 
 ### wipe()   
 ```js
-wipeRandom(filePath:string ):Promise
+wipeRandom(path:string ):Promise
 ```
 - remove file data securely.
 - 기본 제공되는 파일삭제(unlink 등) 함수의 경우, 실제로 데이타를 삭제하지 않고 FAT상의 정보만 미사용으로 변경하므로, 실제 데이타는 보전되고 쉽게 복원될 수 있는 문제가 있습니다. 
@@ -147,7 +150,7 @@ wipeRandom(filePath:string ):Promise
 ### renameRandom()
 
 ```js
-renameRandomUUID(filePath:string)
+renameRandomUUID(path:string)
 ```
 - rename one file.
 - 암호학적 무작위 이름으로 바꾸기
@@ -218,7 +221,7 @@ revokeObjectURL(blobURL)
 getBlobFromURL(blobURL) 
 // alias of resolveObjectURL(blobURL)
 
-deleteFile(filePath)
+deleteFile(path)
 // unlink() file. not secure.
 
 removeDirRecursiveForce(dirPath)
