@@ -19,7 +19,7 @@ console.log('mkDirSync', fs.mkdirSync(dirPath  ))
 // console.log('mkDirSync again', fs.mkdirSync(dirPath  ) )
 
 // recursive: true 지정시 오류 없음. 
-console.log('mkDirSync', fs.mkdirSync(dirPath ,{recursive: true}) )
+console.log('mkDirSync', fs.mkdirSync('f1/f2' ,{recursive: true}) )
 
 
 /*

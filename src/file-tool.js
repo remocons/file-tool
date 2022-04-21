@@ -1,5 +1,5 @@
 import { open, writeFile, readFile, readdir, rename, stat, unlink, rm } from 'fs/promises'
-import { readFileSync, createWriteStream, statSync, readdirSync } from 'fs'
+import { readFileSync, createWriteStream, statSync, readdirSync, fstat } from 'fs'
 import { Blob, resolveObjectURL } from 'buffer'
 import { Readable } from 'stream'
 import crypto from 'crypto'
@@ -55,6 +55,7 @@ export function readDirFilesSync(path) {
   return readdirSync(path)
 }
 
+// blob => objectURL
 export function createObjectURL(blob) {
   return URL.createObjectURL(blob)
 }
@@ -66,7 +67,7 @@ export function revokeObjectURL(blobURL) {
 /**
  * 
  * @param {Blob|File} blob Web APIs Blob
- * @param {String} filePath fullPath. using pathJoin recommended
+ * @param {String} filePath fullPath. 
  * @returns Promise
  */
 export function saveBlob(blob, filePath) {
@@ -77,6 +78,7 @@ export function saveBlob(blob, filePath) {
     })
 }
 
+// objectURL => Blob
 export function getBlobFromURL(blobURL) {
   return resolveObjectURL(blobURL)
 }
@@ -239,8 +241,8 @@ export async function deleteFile(filePath) {
 }
 
 
-export async function removeDirRecursiveForce(filePath) {
-  return rm(filePath, { recursive: true, force: true })
+export async function removeDirRecursiveForce(dirPath) {
+  return rm(dirPath, { recursive: true, force: true })
 }
 
 
