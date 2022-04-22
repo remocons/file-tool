@@ -7,8 +7,8 @@ export default [
   {
     input: './src/file-tool.js',
     output: [
-      { file: pkg.cjs, format: 'cjs' },
-      { file: pkg.esm, format: 'es' }
+      { file: pkg.cjs, format: 'cjs'},
+      { file: pkg.esm, format: 'es'}
     ],
     plugins: [resolve(), commonjs(), terser()],
     external: ['fs/promises'] 

@@ -9,8 +9,10 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.1.0",
+    "mocha": "^9.2.2",
     "rollup": "^2.36.2",
-    "rollup-plugin-terser": "^7.0.2"
+    "rollup-plugin-terser": "^7.0.2",
+    "tap": "^16.0.1"
   },
   "exports": {
     "import": "./src/file-tool.js",
@@ -18,7 +20,8 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "test": "tap"
   },
   "keywords": [
     "File",
@@ -26,10 +29,10 @@
     "fs"
   ],
   "author": {
-    "name": "Lee Dong Eun",
+    "name": "Lee Dong Eun ( 이 동 은 )",
     "email": "sixgen@gmail.com"
   },
-  "license": "MIT",
+  "license": "ISC",
   "dependencies": {
     "mime": "^3.0.0"
   }

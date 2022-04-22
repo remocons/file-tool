@@ -66,9 +66,14 @@ export function saveBlob(blob, path) {
   return blob.arrayBuffer()
     .then(ab => {
       const data = new Uint8Array(ab)
+      // console.log('saveBlob', data.byteLength)
       return writeFile(path, data)
     })
 }
+
+// saveBlobSync()
+// There is no sync version of saveBlob.
+// reason.  Blob.arrayBuffer() is async.
 
 // objectURL => Blob
 export function getBlobFromURL(blobURL) {
@@ -78,7 +83,7 @@ export function getBlobFromURL(blobURL) {
 /**
  * 
  * @param {Array} filePathList  Array of File Path List 
- * @returns {Array} Array of BlobFileList
+ * @returns Promise<Array<BlobFile>> Array of BlobFileList
  */
 export function loadFileList(filePathList) {
   const blobList = []
@@ -86,6 +91,18 @@ export function loadFileList(filePathList) {
     blobList.push(loadFile(path))
   })
   return Promise.all(blobList)
+}
+/**
+ * 
+ * @param {Array} filePathList  Array of File Path List 
+ * @returns {Array<BlobFile>} Array of BlobFileList
+ */
+export function loadFileListSync(filePathList) {
+  const blobList = []
+  filePathList.forEach(path => {
+    blobList.push(loadFileSync(path))
+  })
+  return blobList
 }
 
 /**
@@ -224,9 +241,9 @@ export function wipeRandom(path) {
 
 
 /*
-| when option
-| force === true:  exceptions will be ignored if path does not exist. Default: false.  
-| recursive === true: perform a recursive directory removal.
+ when option
+ force true:  exceptions will be ignored if path does not exist. Default: false.  
+ recursive true: perform a recursive directory removal.
 */
 
 // remove file. 
