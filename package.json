@@ -28,6 +28,11 @@
     "Blob",
     "fs"
   ],
+  "homepage": "https://github.com/congtrol/file-tool",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/congtrol/file-tool.git"
+  },
   "author": {
     "name": "Dongeun Lee",
     "email": "sixgen@gmail.com"
