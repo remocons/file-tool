@@ -11,7 +11,6 @@ Simple Node.js file library that support Web APIs `Blob` and `File` and secure `
   - Blob is experimental ( ~v17.x).
     - You will get some warning message. 
     - gradurate Blob from Experimental ( from v18.x. 2022.April.19) 
-    - conguraturations!!! 
 - `saveBlob()`: save Web APIs Blob to the filesystem.
 - `loadFile()`: read file from filesystem, return Web APIs File.
 - for security and crypto:
@@ -233,5 +232,5 @@ removeDirRecursiveForce(dirPath)
 
 
 ### License
-- [MIT](LICENSE)  이동은 ( Lee Dong Eun ) sixgen@gmail.com 
+- [ISC](LICENSE)  Dongeun Lee 이동은 <sixgen@gmail.com>
 
