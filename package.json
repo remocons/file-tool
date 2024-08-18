@@ -1,43 +1,29 @@
 {
   "name": "file-tool",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Simple wrapper library for NodeJS that support Web APIs File.",
   "main": "./src/file-tool.js",
   "type": "module",
   "esm": "dist/file-tool.mjs",
   "cjs": "dist/file-tool.cjs",
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^17.0.0",
-    "@rollup/plugin-node-resolve": "^11.1.0",
-    "mocha": "^9.2.2",
-    "rollup": "^2.36.2",
-    "rollup-plugin-terser": "^7.0.2",
-    "tap": "^16.0.1"
-  },
   "exports": {
     "import": "./src/file-tool.js",
     "require": "./dist/file-tool.cjs"
-  },
-  "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "test": "tap"
   },
   "keywords": [
     "File",
     "Blob",
     "fs"
   ],
-  "homepage": "https://github.com/congtrol/file-tool",
   "repository": {
     "type": "git",
-    "url": "https://github.com/congtrol/file-tool.git"
+    "url": "https://github.com/remocons/file-tool.git"
   },
   "author": {
-    "name": "Dongeun Lee",
-    "email": "sixgen@gmail.com"
+    "name": "Taeo Lee",
+    "email": "taeo.mocha@gmail.com"
   },
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "mime": "^3.0.0"
   }

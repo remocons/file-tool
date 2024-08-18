@@ -230,7 +230,6 @@ removeDirRecursiveForce(dirPath)
 ```
 
 
-
 ### License
-- [ISC](LICENSE)  Dongeun Lee 이동은 <sixgen@gmail.com>
+- [ISC](LICENSE)
 
